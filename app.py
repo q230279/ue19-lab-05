@@ -1,21 +1,13 @@
 import requests
 
+# URL de l'API avec paramètre de langue pour obtenir des blagues en français
+url = "https://v2.jokeapi.dev/joke/Any?lang=fr"
 
-def fetch_joke():
-    url = "https://v2.jokeapi.dev/joke/Any"
-    try:
-        response = requests.get(url)
-        response.raise_for_status()
-        joke_data = response.json()
+response = requests.get(url)
+data = response.json()
 
-        if joke_data["type"] == "single":
-            print(f"Joke: {joke_data['joke']}")
-        else:
-            print(f"Setup: {joke_data['setup']}")
-            print(f"Delivery: {joke_data['delivery']}")
-    except requests.exceptions.RequestException as e:
-        print(f"Error fetching joke: {e}")
-
-
-if __name__ == "__main__":
-    fetch_joke()
+# Afficher la blague
+if data['type'] == 'single':
+    print(data['joke'])
+else:
+    print(f"{data['setup']} - {data['delivery']}")
