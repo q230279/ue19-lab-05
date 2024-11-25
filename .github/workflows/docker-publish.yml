@@ -19,15 +19,15 @@ jobs:
       id-token: write
 
     steps:
-    # Vérifie le code du dépôt
+    
     - name: Checkout repository
       uses: actions/checkout@v4
 
-    # Configure Docker Buildx pour permettre les builds multi-plateformes
+    
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
 
-    # Connexion au registre GHCR
+    
     - name: Log in to GitHub Container Registry
       uses: docker/login-action@v3
       with:
@@ -35,15 +35,35 @@ jobs:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
 
-    # Extraction des métadonnées de l'image Docker
+    
     - name: Extract Docker metadata
       id: meta
       uses: docker/metadata-action@v5
       with:
         images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
 
-    # Build et publication de l'image Docker
-    - name: Build and push Docker image
+    
+    - name: Build Docker image
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        push: false # On ne pousse pas encore l'image, seulement pour le scan
+        tags: ${{ steps.meta.outputs.tags }}
+        labels: ${{ steps.meta.outputs.labels }}
+
+    
+    - name: Install Trivy
+      run: |
+        wget https://github.com/aquasecurity/trivy/releases/download/v0.29.1/trivy_0.29.1_Linux-64bit.deb
+        sudo dpkg -i trivy_0.29.1_Linux-64bit.deb
+
+    
+    - name: Scan Docker image for vulnerabilities with Trivy
+      run: |
+        trivy image --no-progress --exit-code 1 ghcr.io/${{ github.repository }}:${{ steps.meta.outputs.tags }}
+      
+    
+    - name: Push Docker image
       uses: docker/build-push-action@v5
       with:
         context: .
