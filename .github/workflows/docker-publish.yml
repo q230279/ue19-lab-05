@@ -58,8 +58,9 @@ jobs:
         sudo dpkg -i trivy_0.29.1_Linux-64bit.deb
 
     # Scanner l'image Docker pour des vulnérabilités avec Trivy
-    - name: Show image tags for debugging
-      run: echo ${{ steps.meta.outputs.tags }}
+    - name: Scan Docker image for vulnerabilities with Trivy
+      run: |
+        trivy image --no-progress --exit-code 1 ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.meta.outputs.tags }}
     # Si le scan est réussi, publier l'image Docker
     - name: Push Docker image
       uses: docker/build-push-action@v5
