@@ -48,7 +48,7 @@ jobs:
       with:
         context: .
         push: false  # Ne pas pousser l'image, juste la créer pour le scan
-        tags: ${{ steps.meta.outputs.tags }}
+        tags: ghcr.io/${{ github.repository }}:main
         labels: ${{ steps.meta.outputs.labels }}
 
     # Installer Trivy pour le scan de vulnérabilités
@@ -63,7 +63,7 @@ jobs:
         docker pull ghcr.io/q230279/ue19-lab-05:main    # Scanner l'image Docker pour des vulnérabilités avec Trivy
     - name: Scan Docker image for vulnerabilities with Trivy
       run: |
-        trivy image --no-progress --exit-code 1 ghcr.io/q230279/ue19-lab-05:main
+        trivy image --no-progress --exit-code 1 ghcr.io/${{ github.repository }}:main
     # Si le scan est réussi, publier l'image Docker
     - name: Push Docker image
       uses: docker/build-push-action@v5
