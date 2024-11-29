@@ -56,8 +56,11 @@ jobs:
       run: |
         wget https://github.com/aquasecurity/trivy/releases/download/v0.29.1/trivy_0.29.1_Linux-64bit.deb
         sudo dpkg -i trivy_0.29.1_Linux-64bit.deb
-
-    # Scanner l'image Docker pour des vulnérabilités avec Trivy
+        
+    # Tirer l'image du registre GHCR avant de lancer le scan
+    - name: Pull Docker image from GHCR
+      run: |
+        docker pull ghcr.io/q230279/ue19-lab-05:main    # Scanner l'image Docker pour des vulnérabilités avec Trivy
     - name: Scan Docker image for vulnerabilities with Trivy
       run: |
         trivy image --no-progress --exit-code 1 ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.meta.outputs.tags }}
