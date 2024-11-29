@@ -60,7 +60,7 @@ jobs:
     # Scanner l'image Docker pour des vulnérabilités avec Trivy
     - name: Scan Docker image for vulnerabilities with Trivy
       run: |
-        trivy image --no-progress --exit-code 1 ghcr.io/${{ github.repository }}:${{ steps.meta.outputs.tags }}
+        trivy image --no-progress --exit-code 1 ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.meta.outputs.tags }}
 
     # Si le scan est réussi, publier l'image Docker
     - name: Push Docker image
